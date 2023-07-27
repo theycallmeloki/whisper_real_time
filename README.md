@@ -1,3 +1,7 @@
+### Update
+
+Comes with a little UI you can use to quickly copy your text and paste it into ChatGPT
+
 # Real Time Whisper Transcription
 
 ![Demo gif](demo.gif)
