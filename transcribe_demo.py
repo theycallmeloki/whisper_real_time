@@ -6,6 +6,7 @@ import os
 import speech_recognition as sr
 import whisper
 import torch
+import json
 
 from datetime import datetime, timedelta
 from queue import Queue
@@ -13,8 +14,41 @@ from tempfile import NamedTemporaryFile
 from time import sleep
 from sys import platform
 
+from flask import Flask, Response, jsonify, send_from_directory, render_template
+from threading import Thread
+from flask_cors import CORS
+
+
+app = Flask(__name__, static_folder='client')
+CORS(app)
+
+# Place transcription list at global scope for shared access
+transcription = []
+
+@app.route('/')
+def index():
+    return send_from_directory(app.static_folder, 'index.html')
+
+@app.route('/app.js')
+def send_js():
+    return send_from_directory(app.static_folder, 'app.js')
+
+@app.route('/transcription/stream')
+def stream_transcription():
+    """Endpoint to stream the transcription in real-time."""
+    def generate():
+        prev_len = len(transcription)
+        while True:
+            if len(transcription) != prev_len:
+                yield f"data:{json.dumps(transcription)}\n\n"
+                prev_len = len(transcription)
+            sleep(1)
+    return Response(generate(), mimetype='text/event-stream')
+
 
 def main():
+    global transcription
+    transcription = ['']
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default="medium", help="Model to use",
                         choices=["tiny", "base", "small", "medium", "large"])
@@ -72,7 +106,6 @@ def main():
     phrase_timeout = args.phrase_timeout
 
     temp_file = NamedTemporaryFile().name
-    transcription = ['']
     
     with source:
         recorder.adjust_for_ambient_noise(source)
@@ -147,6 +180,10 @@ def main():
     for line in transcription:
         print(line)
 
+def run_flask_app():
+    app.run(port=5000, host="0.0.0.0")
 
+# The two lines below create separate threads for the Flask app and the main function.
 if __name__ == "__main__":
+    Thread(target=run_flask_app).start()
     main()
