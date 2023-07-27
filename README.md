@@ -1,6 +1,9 @@
 ### Update
 
 Comes with a little UI you can use to quickly copy your text and paste it into ChatGPT
+![ezgif-2-50ad1aa703](https://github.com/theycallmeloki/whisper_real_time/assets/3431687/3215c0a9-6a7c-47ac-8047-559f02e40ffd)
+
+
 
 # Real Time Whisper Transcription
 
