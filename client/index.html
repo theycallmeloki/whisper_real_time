@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edith Transcriptions</title>
+    <script src="https://unpkg.com/vue@3"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        .transcript {
+            font-size: 22px;
+            margin-bottom: 20px;
+            display: flex;   /* make it a flex container */
+            align-items: center;  /* vertical alignment */
+            border: 2px solid #000; /* add a border */
+            padding: 45px; /* add some padding inside the border */
+        }
+        .transcript input[type="checkbox"] {
+            transform: scale(6); /* make checkbox bigger */
+            margin-right: 50px;
+        }
+        .transcript p {
+            padding: 10px;
+        }
+        /* style for floating button */
+        button {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            padding: 10px 20px;
+            font-size: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>Edith Transcription</h1>
+        <div 
+            class="transcript"
+            v-for="(transcript, index) in transcriptions" 
+            :key="index"
+            :data-index="index"
+            @mousedown="toggleSelection(index)"
+            @mouseover="mouseover(index)"
+        >
+            <input type="checkbox" v-model="transcript.selected" />
+            <p>{{ transcript.text }}</p>
+        </div>
+        <button @click="copyToClipboard">Copy selected to clipboard</button>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
